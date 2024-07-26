@@ -21,6 +21,9 @@ const getData = async (slug: string) => {
 };
 
 const SinglePostPage = async ({ params }: any) => {
+    /** This is sequential data fetching in Next.js as api call in PostUser depends on Single Post api call as post.userId prop is passed */
+    // https://nextjs.org/docs/app/building-your-application/data-fetching/patterns#sequential-data-fetching
+
     const post = await getData(params.slug);
 
     return (
