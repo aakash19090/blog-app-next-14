@@ -1,7 +1,5 @@
-import { Document } from 'mongoose';
-
 // Define an interface representing a document in MongoDB.
-export interface IUser extends Document {
+export interface IUser {
     username: string;
     email: string;
     password: string;
@@ -10,7 +8,7 @@ export interface IUser extends Document {
 }
 
 // Define an interface representing a document in MongoDB.
-export interface IPost extends Document {
+export interface IPost {
     title: string;
     description: string;
     img?: string;

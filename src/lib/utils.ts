@@ -1,21 +1,32 @@
-import mongoose, { Connection } from 'mongoose';
+import { connectToDB } from '@/lib/db';
+import { Post, User } from '@/lib/models';
 
-interface ConnectionType {
-    isConnected?: Connection['readyState'];
-}
+connectToDB();
 
-const connection: ConnectionType = {};
-
-export const connectToDB = async (): Promise<void> => {
+export const getAllPosts = async () => {
     try {
-        if (connection.isConnected) {
-            console.log('Using existing connection');
-            return;
-        }
-        const db = await mongoose.connect(
-            process.env.MONGO_CONNECTION_STRING as string
-        );
-        connection.isConnected = db.connections[0].readyState;
+        const posts = await Post.find();
+        return posts;
+    } catch (error: any) {
+        console.log(error);
+        throw new Error('Failed to fetch posts!');
+    }
+};
+
+export const getSinglePost = async (slug: string) => {
+    try {
+        const post = await Post.findOne({ slug });
+        return post;
+    } catch (error: any) {
+        console.log(error);
+        throw new Error(error);
+    }
+};
+
+export const getPostUser = async (userId: string) => {
+    try {
+        const user = await User.findById(userId);
+        return user;
     } catch (error: any) {
         console.log(error);
         throw new Error(error);

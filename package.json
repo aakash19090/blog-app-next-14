@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "mongoose": "^8.5.1",
     "next": "14.2.5",
     "react": "^18",

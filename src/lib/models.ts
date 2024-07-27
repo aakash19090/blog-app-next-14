@@ -1,5 +1,5 @@
-import mongoose, { Schema, Model } from 'mongoose';
-import { IUser, IPost } from '@types';
+import { IPost, IUser } from '@/types/types';
+import mongoose, { Model, Schema } from 'mongoose';
 
 // Define the user schema
 const userSchema: Schema<IUser> = new mongoose.Schema(
