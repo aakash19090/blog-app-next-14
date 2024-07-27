@@ -1,5 +1,7 @@
 import Link from 'next/link';
+
 import Links from '@/components/Navbar/Links';
+
 import styles from './navbar.module.css';
 
 const Navbar = async () => {

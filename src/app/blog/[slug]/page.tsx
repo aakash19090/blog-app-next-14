@@ -1,3 +1,5 @@
+import { title } from 'process';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
@@ -8,6 +10,15 @@ import { getFormattedDate, getSinglePost } from '@/lib/utils';
 import { IPost } from '@/types/types';
 
 import styles from './singlePost.module.css';
+
+export const generateMetadata = async ({ params }: { params: { slug: string } }) => {
+    const post: IPost | null = await getSinglePost(params.slug);
+
+    return {
+        title: post?.title,
+        description: post?.description,
+    };
+};
 
 const SinglePostPage = async ({ params }: any) => {
     /** This is sequential data fetching in Next.js as api call in PostUser depends on Single Post api call as post.userId prop is passed */

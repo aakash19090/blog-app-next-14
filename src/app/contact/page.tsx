@@ -1,5 +1,12 @@
+import { Metadata } from 'next';
 import Image from 'next/image';
+
 import styles from './contact.module.css';
+
+export const metadata: Metadata = {
+    title: 'Contact Page',
+    description: 'Contact description',
+};
 
 const ContactPage = () => {
     return (
@@ -12,13 +19,7 @@ const ContactPage = () => {
                     <input type='text' placeholder='Name and Surname' />
                     <input type='text' placeholder='Email Address' />
                     <input type='text' placeholder='Phone Number (Optional)' />
-                    <textarea
-                        name=''
-                        id=''
-                        cols={30}
-                        rows={10}
-                        placeholder='Message'
-                    ></textarea>
+                    <textarea name='' id='' cols={30} rows={10} placeholder='Message'></textarea>
                     <button>Send</button>
                 </form>
             </div>
