@@ -1,4 +1,6 @@
-import { getPostUser } from '@/lib/utils';
+import Image from 'next/image';
+
+import { getCachedPostUser, getPostUser } from '@/lib/utils';
 
 import { IUser } from '@/types/types';
 
@@ -13,8 +15,11 @@ const PostUser = async ({ userId }: PostUserProps) => {
 
     return (
         <div className={styles.container}>
-            <span className={styles.title}>Author</span>
-            <span className={styles.username}> {user?.username} </span>
+            <Image src={user?.img || '/noavatar.png'} alt='' width={50} height={50} className={styles.avatar} />
+            <div className={styles.texts}>
+                <span className={styles.title}>Author</span>
+                <span className={styles.username}> {user?.username} </span>
+            </div>
         </div>
     );
 };
