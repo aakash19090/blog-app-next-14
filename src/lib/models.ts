@@ -1,4 +1,3 @@
-import { IPost, IUser } from '@/types/types';
 import mongoose, { Model, Schema } from 'mongoose';
 
 // Define the user schema

@@ -2,8 +2,6 @@ import Image from 'next/image';
 
 import { getCachedPostUser, getPostUser } from '@/lib/utils';
 
-import { IUser } from '@/types/types';
-
 import styles from './postUser.module.css';
 
 type PostUserProps = {

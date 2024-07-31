@@ -7,8 +7,6 @@ import PostUser from '@/components/PostUser';
 
 import { getFormattedDate, getSinglePost } from '@/lib/utils';
 
-import { IPost } from '@/types/types';
-
 import styles from './singlePost.module.css';
 
 export const generateMetadata = async ({ params }: { params: { slug: string } }) => {
