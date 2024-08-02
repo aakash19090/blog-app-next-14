@@ -30,6 +30,7 @@ const links = [
 
 const Links = ({ session }: { session: Session | null }) => {
     const [open, setOpen] = useState(false);
+    console.log('session', session);
     const isAdmin = true;
 
     return (
