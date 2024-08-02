@@ -2,10 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { signIn, signOut } from '@/lib/auth';
+import bcrypt from 'bcryptjs';
 
-import { connectToDB } from './db';
-import { Post } from './models';
+import { signIn, signOut } from '@/lib/auth';
+import { connectToDB } from '@/lib/db';
+import { Post, User } from '@/lib/models';
 
 export const createNewPost = async (formData: FormData) => {
     const { title, slug, description, userId } = Object.fromEntries(formData);
@@ -40,4 +41,58 @@ export const handleGithubLogin = async () => {
 
 export const handleLogout = async () => {
     await signOut();
+};
+
+/**
+ * Registers a new user with the provided form data.
+ *
+ * @param {FormData} formData - The form data containing user details.
+ * @returns {Promise<Object>} - An object containing an error message if any error occurs.
+ */
+export const registerUser = async (formData: FormData) => {
+    // Destructure the form data to extract individual fields
+    const { username, email, password, passwordRepeat, img } = Object.fromEntries(formData);
+
+    // Check if the password and passwordRepeat fields match
+    if (password !== passwordRepeat) {
+        return { error: 'Passwords do not match' };
+    }
+
+    try {
+        connectToDB();
+
+        // Check if a user with the same username already exists
+        const existingUser = await User.findOne({ username });
+
+        if (existingUser) {
+            return { error: 'Username already exists' };
+        }
+
+        const saltRounds = 10; // You can adjust the salt rounds as needed
+
+        // Hash the password with the specified number of salt rounds
+        const hashedPassword = await bcrypt.hash(password.toString(), saltRounds);
+
+        // Create a new user with the hashed password and other details
+        const newUser = new User({ username, email, password: hashedPassword, img });
+
+        // Save the new user to the database
+        await newUser.save();
+        console.log('New user saved to db');
+    } catch (error: any) {
+        console.log('error', error);
+        return { error: 'Something Went Wrong! Please try again' };
+    }
+};
+
+export const handleLoginWithCredentials = async (formData: FormData) => {
+    // Destructure the form data to extract individual fields
+    const { username, password } = Object.fromEntries(formData);
+
+    try {
+        await signIn('credentials', { username, password });
+    } catch (error: any) {
+        console.log('error', error);
+        return { error: 'Something Went Wrong! Please try again' };
+    }
 };

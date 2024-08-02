@@ -1,5 +1,8 @@
 import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
 import GitHub from 'next-auth/providers/github';
+
+import bcrypt from 'bcryptjs';
 
 import { connectToDB } from '@/lib/db';
 import { User } from '@/lib/models';
@@ -17,6 +20,31 @@ export const {
             clientId: process.env.GITHUB_ID,
             clientSecret: process.env.GITHUB_SECRET,
         }),
+        Credentials({
+            authorize: async (credentials: { username: string; password: string }) => {
+                const { username, password } = credentials;
+                connectToDB();
+
+                // Find the user with the given username
+                const user = await User.findOne({ username });
+
+                // If the user does not exist, return an error
+                if (!user) {
+                    throw new Error('Invalid Credentials! Please try again');
+                }
+
+                // Compare the provided password with the hashed password in the database
+                const isPasswordValid = await bcrypt.compare(password.toString(), user.password);
+
+                // If the password is invalid, return an error
+                if (!isPasswordValid) {
+                    throw new Error('Invalid Credentials! Please try again');
+                }
+
+                // If the password is valid, return the user object
+                return user;
+            },
+        }),
     ],
     callbacks: {
         // This callback runs whenever a user tries to sign in
@@ -33,7 +61,6 @@ export const {
                         const newUser = new User({
                             username: profile?.login,
                             email: profile?.email,
-                            password: 'test@123', // Placeholder password, should be handled securely
                             img: profile?.avatar_url,
                             isAdmin: false,
                         });
