@@ -1,11 +1,18 @@
-export default function LoginPage() {
+import { handleGithubLogin } from '@/lib/action';
+
+import styles from './login.module.css';
+
+const LoginPage = async () => {
     return (
-        <div>
-            <h1>Login</h1>
-            <p>
-                This is the Login page of our Next.js application using the App
-                Router.
-            </p>
+        <div className={styles.container}>
+            <div className={styles.wrapper}>
+                <form action={handleGithubLogin}>
+                    <button className={styles.github}>Login with Github</button>
+                </form>
+                {/* <LoginForm /> */}
+            </div>
         </div>
     );
-}
+};
+
+export default LoginPage;

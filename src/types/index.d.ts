@@ -1,3 +1,5 @@
+import { Session } from 'next-auth';
+
 declare global {
     // Define an interface representing a document in MongoDB.
     interface IUser {
@@ -17,6 +19,16 @@ declare global {
         userId: string;
         slug: string;
         createdAt?: Date;
+    }
+
+    interface Session extends Session {
+        user?: {
+            name?: string | null;
+            email?: string | null;
+            image?: string | null;
+            isAdmin?: boolean | null;
+        };
+        expires: ISODateString;
     }
 }
 
