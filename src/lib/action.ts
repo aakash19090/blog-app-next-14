@@ -49,7 +49,7 @@ export const handleLogout = async () => {
  * @param {FormData} formData - The form data containing user details.
  * @returns {Promise<Object>} - An object containing an error message if any error occurs.
  */
-export const registerUser = async (formData: FormData) => {
+export const registerUser = async (prevState: any, formData: FormData) => {
     // Destructure the form data to extract individual fields
     const { username, email, password, passwordRepeat, img } = Object.fromEntries(formData);
 
@@ -79,20 +79,40 @@ export const registerUser = async (formData: FormData) => {
         // Save the new user to the database
         await newUser.save();
         console.log('New user saved to db');
+        return { success: true };
     } catch (error: any) {
         console.log('error', error);
         return { error: 'Something Went Wrong! Please try again' };
     }
 };
 
-export const handleLoginWithCredentials = async (formData: FormData) => {
+export const handleLoginWithCredentials = async (prevState: any, formData: FormData) => {
     // Destructure the form data to extract individual fields
     const { username, password } = Object.fromEntries(formData);
 
     try {
+        connectToDB();
+
+        // Find the user with the given username
+        const user = await User.findOne({ username });
+
+        // If the user does not exist, return an error
+        if (!user) {
+            return { error: 'Invalid Credentials! Please try again' };
+        }
+
+        // Compare the provided password with the hashed password in the database
+        const isPasswordValid = await bcrypt.compare(password.toString(), user.password);
+
+        // If the password is invalid, return an error
+        if (!isPasswordValid) {
+            return { error: 'Invalid Credentials! Please try again' };
+        }
+
+        // If the password is valid, pass the credentials to the signIn callback in NextAuth
         await signIn('credentials', { username, password });
     } catch (error: any) {
         console.log('error', error);
-        return { error: 'Something Went Wrong! Please try again' };
+        throw error;
     }
 };

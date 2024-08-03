@@ -25,23 +25,13 @@ export const {
                 const { username, password } = credentials;
                 connectToDB();
 
-                // Find the user with the given username
+                /**
+                 * Find the user with the given username
+                 * No need to check if the user exists or the crendeitals are correct as
+                 * that's already checked within handleLoginWithCredentials action and then passed here
+                 */
+
                 const user = await User.findOne({ username });
-
-                // If the user does not exist, return an error
-                if (!user) {
-                    throw new Error('Invalid Credentials! Please try again');
-                }
-
-                // Compare the provided password with the hashed password in the database
-                const isPasswordValid = await bcrypt.compare(password.toString(), user.password);
-
-                // If the password is invalid, return an error
-                if (!isPasswordValid) {
-                    throw new Error('Invalid Credentials! Please try again');
-                }
-
-                // If the password is valid, return the user object
                 return user;
             },
         }),
