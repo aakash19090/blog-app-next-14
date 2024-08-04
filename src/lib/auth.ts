@@ -7,6 +7,8 @@ import bcrypt from 'bcryptjs';
 import { connectToDB } from '@/lib/db';
 import { User } from '@/lib/models';
 
+import { authConfig } from './auth.config';
+
 // NextAuth configuration
 export const {
     handlers: { GET, POST },
@@ -15,12 +17,22 @@ export const {
     signOut,
 } = NextAuth({
     // Configure GitHub as the authentication provider
+    ...authConfig,
     providers: [
         GitHub({
             clientId: process.env.GITHUB_ID,
             clientSecret: process.env.GITHUB_SECRET,
         }),
         Credentials({
+            /**
+             *
+             * @param credentials
+             * @returns user
+             * The authorize function in the Credentials provider of NextAuth.js runs
+             * during the sign-in process when a user attempts to log in with their
+             * credentials (e.g., username and password). This function is responsible for
+             * verifying the user's credentials and returning the user object if the credentials are valid.
+             */
             authorize: async (credentials: { username: string; password: string }) => {
                 const { username, password } = credentials;
                 connectToDB();
@@ -32,7 +44,10 @@ export const {
                  */
 
                 const user = await User.findOne({ username });
-                return user;
+                if (user) {
+                    return user;
+                }
+                return null;
             },
         }),
     ],
@@ -44,9 +59,7 @@ export const {
                 // Connect to the MongoDB database
                 await connectToDB();
                 try {
-                    // Check if a user with the given email already exists in the database
                     const existingUser = await User.findOne({ email: profile?.email });
-                    // If the user does not exist, create a new user in the database
                     if (!existingUser) {
                         const newUser = new User({
                             username: profile?.login,
@@ -54,7 +67,6 @@ export const {
                             img: profile?.avatar_url,
                             isAdmin: false,
                         });
-                        // Save the new user to the database
                         await newUser.save();
                     }
                 } catch (error) {
@@ -67,5 +79,7 @@ export const {
             // Return true to indicate that the sign-in process succeeded
             return true;
         },
+
+        ...authConfig.callbacks,
     },
 });

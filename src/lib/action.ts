@@ -87,32 +87,30 @@ export const registerUser = async (prevState: any, formData: FormData) => {
 };
 
 export const handleLoginWithCredentials = async (prevState: any, formData: FormData) => {
-    // Destructure the form data to extract individual fields
     const { username, password } = Object.fromEntries(formData);
 
     try {
         connectToDB();
 
-        // Find the user with the given username
         const user = await User.findOne({ username });
 
-        // If the user does not exist, return an error
         if (!user) {
             return { error: 'Invalid Credentials! Please try again' };
         }
 
-        // Compare the provided password with the hashed password in the database
         const isPasswordValid = await bcrypt.compare(password.toString(), user.password);
 
-        // If the password is invalid, return an error
         if (!isPasswordValid) {
             return { error: 'Invalid Credentials! Please try again' };
         }
 
         // If the password is valid, pass the credentials to the signIn callback in NextAuth
-        await signIn('credentials', { username, password });
+        await signIn('credentials', { redirect: false, username, password });
     } catch (error: any) {
         console.log('error', error);
+        if (error.message.includes('CredentialsSignin')) {
+            return { error: 'Invalid username or password' };
+        }
         throw error;
     }
 };
